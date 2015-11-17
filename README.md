@@ -1,6 +1,10 @@
 # fu-project-smd
 Tugas Mata Kuliah Sistem Mikroprosesor Digital Fisika Unpad 2015
 
+Source code : `ProjectSMD.asm`
+
+Proteus File : `Project_SMD.pdsprj`
+
 ### WORK IN PROGRESS !
 ##### Done
 1. Port Assignment ADC, LCD, Button Controller
