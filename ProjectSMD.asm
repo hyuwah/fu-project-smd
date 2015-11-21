@@ -2,10 +2,11 @@
 ; Kuliah SMD 2015
 ; M.Wahyudin (140310120031)
 ;
-; Name  : Project SMD
-; Desc  :
-; Input : 4 Control PB, 1 Saklar, Sensor Suhu LM35
-; Output: LCD, Serial RS232
+; Name   : Project SMD
+; Desc   :
+; Input  : 4 Control PB, 1 Saklar, Sensor Suhu LM35
+; Output : LCD, Serial RS232
+; Version: 0.2
 ;-------------------------------------------------------------------
 
 $NOMOD51
@@ -14,7 +15,7 @@ $INCLUDE (8051.MCU)
       org   0000h
 
 ;========
-;Definisi
+;Definisi Variabel
 ;========
 ;LCD
 RS BIT P3.5
@@ -22,7 +23,18 @@ RW BIT P3.6
 E  BIT P3.7
 
 count equ 33h
+countbefore equ 34h
 memory equ 36h
+
+;ADC
+adc_cs equ P1.4             ;Chip Select P1.4
+adc_rd equ P1.5             ;Read signal P1.5
+adc_wr equ P1.6             ;Write signal P1.6
+adc_intr equ P1.7           ;INTR signal P1.7
+
+adc_port equ P0         ;ADC data pins P0
+adc_val equ 30H         ;ADC read value stored here
+data_adc equ 35h
 
 ;============
 ;Inisialisasi
@@ -33,53 +45,94 @@ setb P1.2
 setb P1.3
 
 mov count,#0
-mov r5,#30h
-mov r6,#30h
-mov r7,#30h
+mov countbefore, #0
+
+acall init
+acall blink
+acall clear
 ;=========
 ;Main Loop
 ;=========
 Loop:
 
-    acall init
-    acall blink
-    acall clear
-    jmp print
+   acall conversion
+   acall reading
+   lcall DELAY
+   MOV count,data_adc
+   mov a, count
+   cjne a, countbefore, update
+   jmp Loop
 
-polls:
-jnb P1.0, up
-jnb P1.1, down
-jnb P1.2, ok
-jnb P1.3, hapus
-jmp polls
-
-up:
-    inc count
-    lcall hextoascii
-    acall init
-    acall blink
-    acall clear
-    jmp print
-down:
-    dec count
-    lcall hextoascii
-    acall init
-    acall blink
-    acall clear
-    jmp print
-ok:
-   mov memory, count
+update:
+   mov countbefore, count
    lcall hextoascii
-   mov p2,#192
-   ACALL LCDCONTROL
-   jmp print
-hapus:
-mov count, #0
-lcall hextoascii
-    acall init
-    acall blink
-    acall clear
-    jmp print
+   acall clear
+   lcall DELAY
+   ljmp print
+
+;    acall init
+;    acall blink
+;    acall clear
+;    jmp print
+
+;polls:
+;jnb P1.0, up
+;jnb P1.1, down
+;jnb P1.2, ok
+;jnb P1.3, hapus
+;jmp polls
+
+;up:
+;    inc count
+;    lcall hextoascii
+;    acall init
+;    acall blink
+;    acall clear
+;    jmp print
+;down:
+;    dec count
+;    lcall hextoascii
+;    acall init
+;    acall blink
+;    acall clear
+;    jmp print
+;ok:
+;   mov memory, count
+;   lcall hextoascii
+;   mov p2,#192
+;   ACALL LCDCONTROL
+;   jmp print
+;hapus:
+;mov count, #0
+;lcall hextoascii
+;    acall init
+;    acall blink
+;    acall clear
+;    jmp print
+
+;=========
+;Routine
+;=========
+
+;ADC CONVERSION
+conversion:
+   setb adc_intr
+   CLR adc_cs ;// makes CS=0
+   SETB adc_rd ;// makes RD high
+   CLR adc_wr ;// makes WR low
+   SETB adc_wr ;// low to high pulse to WR for starting conversion
+WAIT:
+   JB adc_intr,WAIT ;// polls until INTR=0
+ret
+
+;ADC READING
+reading:
+   CLR adc_cs ;// ensures CS=0
+   CLR adc_rd ;// high to low pulse to RD for reading the data from ADC
+   MOV adc_val,adc_port ;// moves the digital data to accumulator
+   mov a,adc_val
+   mov data_adc,a
+ret
 
 ;LCD INITIALIZATION
 init:   MOV P2, #38H
@@ -100,10 +153,11 @@ print:
     ACALL LCDDATA
     MOV P2, r7
     ACALL LCDDATA
+    ljmp Loop
 
-ulang:
-    lcall delay
-    jmp polls
+;ulang:
+;    lcall delay
+;    jmp polls
 
 
 ;DELAY SUBROUTINE
