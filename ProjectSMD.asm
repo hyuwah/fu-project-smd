@@ -6,7 +6,7 @@
 ; Desc   :
 ; Input  : 4 Control PB, 1 Saklar, Sensor Suhu LM35
 ; Output : LCD, Serial RS232
-; Version: 0.3
+; Version: 0.35
 ;-------------------------------------------------------------------
 
 $NOMOD51
@@ -110,8 +110,16 @@ Loop:
    jnb P1.3, hapus
    lcall delay
    ;Polling relay
-   cjne a, memory, relay
-   clr p3.4
+   cjne a, memory, not_equal
+   equal:
+   jmp loop
+   not_equal:
+   jc kurang_dari
+   lebih_dari:  ;A > 27
+   clr p3.4    ; Your Code Here
+    JMP Loop
+   kurang_dari: ;A < 27
+   setb p3.4     ; Your Code Here
    jmp Loop
 
 update:
@@ -123,9 +131,6 @@ update:
    lcall DELAY
    ljmp print
 
-relay:
-   setb p3.4
-   jmp Loop
 
 up:
    lcall delaybutton
@@ -270,7 +275,7 @@ mov a,satu
 mov b,#10d
 mul ab
 mov b,#17d
-div ab      ;===hasil data sebenarnya untuk nilai satuan
+div ab;===hasil data sebenarnya untuk nilai satuan
 mov b,puluh
 add a,b
 
