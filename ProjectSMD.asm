@@ -6,7 +6,7 @@
 ; Desc   :
 ; Input  : 4 Control PB, 1 Saklar, Sensor Suhu LM35
 ; Output : LCD, Serial RS232
-; Version: 0.35
+; Version: 0.4
 ;-------------------------------------------------------------------
 
 $NOMOD51
@@ -36,6 +36,11 @@ celcius equ 44h
 mov degree,#0DFh    ; degree symbol
 mov celcius,#'C'
 
+sdata equ 46h
+mov r5,#30h
+mov r6,#30h
+mov r7,#30h
+
 ;ADC
 adc_cs equ P1.4             ;Chip Select P1.4
 adc_rd equ P1.5             ;Read signal P1.5
@@ -48,6 +53,12 @@ data_adc equ 30h
 ;============
 ;Inisialisasi
 ;============
+mov scon,#52h ;aktifkan port serial, mode 1
+mov tmod,#20h ;timer 1, mode 2
+mov th1,#-13  ;nilai reload untuk baudrate 2400
+setb tr1  ;aktifkan timer 1
+
+
 setb P1.0
 setb P1.1
 setb P1.2
@@ -95,20 +106,21 @@ mov setval,#0
 ;=========
 
 Loop:
+   lcall scom_send
    acall get_adc  ; konversi dan baca data adc      ;
    MOV count,data_adc
    mov a,count
    cjne a, countbefore, update
    ;Polling Button
-   lcall delay
+   ;lcall delay
    jnb P1.0, up
-   lcall delay
+   ;lcall delay
    jnb P1.1, down
-   lcall delay
+   ;lcall delay
    jnb P1.2, ok
-   lcall delay
+   ;lcall delay
    jnb P1.3, hapus
-   lcall delay
+   ;lcall delay
    ;Polling relay
    cjne a, memory, not_equal
    equal:
@@ -130,7 +142,6 @@ update:
    ACALL LCDCONTROL
    lcall DELAY
    ljmp print
-
 
 up:
    lcall delaybutton
@@ -210,19 +221,41 @@ print:
     lcall delay
     ljmp Loop
 
-;ulang:
-;    lcall delay
-;    jmp polls
-
+;Serial Comm Send
+scom_send:
+   mov a,count
+   cjne a,countbefore,skip
+   mov sdata,r5
+   mov sbuf, sdata
+   lcall delayser
+   mov sdata,r6
+   mov sbuf, sdata
+   lcall delayser
+   mov sdata,r7
+   mov sbuf, sdata
+   lcall delayser
+   mov sdata,#0Dh ; Carriage Return / garis baru (Ascii 13d)
+   mov sbuf, sdata
+   lcall delayser
+skip:
+   ret
 
 ;DELAY SUBROUTINE
-delaybutton:
-    MOV R0, #0
-    MOV R1, #0
+delayser:   ;Delay supaya satu klik satu increment di button
+    MOV R0, #0    ;sama delay supaya data ke terminal muncul
+    MOV R1, #55   ;delay nya jangan terlalu lambat atau terlalu cepet
 tunggu1:
   DJNZ R0, tunggu1
   DJNZ R1, tunggu1
 RET
+
+delaybutton:
+   mov r2,#3
+tunggu3:
+   lcall delayser
+   djnz r2,tunggu3
+   ret
+
 DELAY:
     MOV R0, #0
     MOV R1, #1
