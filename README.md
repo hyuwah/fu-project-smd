@@ -48,7 +48,7 @@ Skematik Proteus:
 Saat Running:
 ![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/screenshot_run.png "Simulasi")
 Full Run:
-![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/fullrun.png "Simulasi Fullrun")
+![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/fullrun.PNG "Simulasi Fullrun")
 
 ## Referensi
 #### LCD
