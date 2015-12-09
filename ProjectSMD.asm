@@ -6,7 +6,7 @@
 ; Desc   :
 ; Input  : 4 Control PB, 1 Saklar, Sensor Suhu LM35
 ; Output : LCD, Serial RS232
-; Version: 0.4
+; Version: 0.7
 ;-------------------------------------------------------------------
 
 $NOMOD51
@@ -30,6 +30,10 @@ memory equ 36h
 ratus equ 42h
 puluh equ 41h
 satu equ 40h
+
+r5sv equ 51h
+r6sv equ 52h
+r7sv equ 53h
 
 degree equ 43h
 celcius equ 44h
@@ -137,7 +141,6 @@ Loop:
 update:
    mov countbefore, count
    lcall hextoascii
-
    mov p2,#083h
    ACALL LCDCONTROL
    lcall DELAY
@@ -147,34 +150,34 @@ up:
    lcall delaybutton
    inc setval
    mov count, setval
-   lcall hextoascii
+   lcall hextoasciisv
    mov p2,#0C3h
    ACALL LCDCONTROL
-   jmp print
+   jmp printsv
 down:
    lcall delaybutton
    dec setval
    mov count, setval
-   lcall hextoascii
+   lcall hextoasciisv
    mov p2,#0C3h
    ACALL LCDCONTROL
-   jmp print
+   jmp printsv
 ok:
    lcall delaybutton
    mov memory, setval
    mov count, setval
-   lcall hextoascii
+   lcall hextoasciisv
    mov p2,#0CAh
    ACALL LCDCONTROL
-   jmp print
+   jmp printsv
 hapus:
    lcall delaybutton
    mov setval, #0
    mov count, setval
-   lcall hextoascii
+   lcall hextoasciisv
    mov p2,#0C3h
    ACALL LCDCONTROL
-   jmp print
+   jmp printsv
 
 ;=========
 ;Routine
@@ -213,6 +216,20 @@ print:
     MOV P2,R6
     ACALL LCDDATA
     MOV P2,R7
+    ACALL LCDDATA
+    MOV P2,degree
+    ACALL LCDDATA
+    MOV P2,celcius
+    ACALL LCDDATA
+    lcall delay
+    ljmp Loop
+
+printsv:
+    MOV P2,r5sv
+    ACALL LCDDATA
+    MOV P2,r6sv
+    ACALL LCDDATA
+    MOV P2,r7sv
     ACALL LCDDATA
     MOV P2,degree
     ACALL LCDDATA
@@ -329,6 +346,50 @@ mov r6,a  ;Save 10th place in R6
 mov a,b
 orl a,r7
 mov r7,a  ;Save units place in R7
+call delay
+ret
+
+hextoasciisv:
+mov r5sv,#30h
+mov r6sv,#30h
+mov r7sv,#30h
+mov a, count
+cjne a,#000h,continuesv ;check if number is 0 if not then continue
+ret
+continuesv:
+
+mov b,#17
+div ab
+mov puluh,a
+mov satu,b
+mov b,#10
+mul ab
+mov puluh,a
+mov a,satu
+mov b,#10d
+mul ab
+mov b,#17d
+div ab;===hasil data sebenarnya untuk nilai satuan
+mov b,puluh
+add a,b
+
+clr c
+mov b,#100  ;divide by 100
+div ab
+orl a,r5sv
+mov r5sv,a  ;save 100th place in R5
+
+clr c
+mov a,b
+
+mov b,#10 ;Divide by 10
+div ab
+orl a,r6sv
+mov r6sv,a  ;Save 10th place in R6
+
+mov a,b
+orl a,r7sv
+mov r7sv,a  ;Save units place in R7
 call delay
 ret
 

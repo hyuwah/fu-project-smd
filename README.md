@@ -16,10 +16,13 @@ Output:
 * Motor (Fan)
 
 Source code : `ProjectSMD.asm`
-
+Realtime Graph : `SerialPlot.py`
 Proteus File : `Project_SMD.pdsprj`
 
-Current Version : 0.4
+> Dependencies:
+> Python 2.7 (Use VIDLE for VPython) + Pyserial + Matplotlib
+
+Current Version : 0.7
 
 ### WORK IN PROGRESS !
 ##### Done
@@ -30,21 +33,22 @@ Current Version : 0.4
 5. Temperature display on LCD
 6. heater logic (plant), present value and setting value
 7. Serial communication to hyperterminal
+8. Serial communication to virtual com (VSPD)
+9. Plotting Realtime data using python (SerialPlot.py)
 
 ##### To do
-1. Serial Communication via RS232 to virtual com
-2. save data from virtual com to excel
-2. System Integration
+1. Cleanup code and optimization
+2. PID Control
+3. Documentation
 
-## Alur Kerja Sistem
-Sensor Suhu --> ADC 0804 --> Mikrokontroler AT89C51 --> LCD & RS232  
-^-- Heater <-- Relay <-- PB Kontrol <-'   
 
 ## Screenshot
 Skematik Proteus:
 ![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/screenshot.png "Skematik Proteus")
 Saat Running:
 ![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/screenshot_run.png "Simulasi")
+Full Run:
+![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/fullrun.png "Simulasi Fullrun")
 
 ## Referensi
 #### LCD
