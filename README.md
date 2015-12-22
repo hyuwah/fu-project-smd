@@ -44,11 +44,11 @@ Current Version : 0.7
 
 ## Screenshot
 Skematik Proteus:
-![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/screenshot.png "Skematik Proteus")
+![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/img_res/screenshot.png "Skematik Proteus")
 Saat Running:
-![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/screenshot_run.png "Simulasi")
+![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/img_res/screenshot_run.png "Simulasi")
 Full Run:
-![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/fullrun.png "Simulasi Fullrun")
+![alt text](https://raw.githubusercontent.com/hyuwah/fu-project-smd/master/img_res/fullrun.png "Simulasi Fullrun")
 
 ## Referensi
 #### LCD

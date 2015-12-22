@@ -5,7 +5,7 @@ import matplotlib.pylab as plt
 import serial
 
 # inisialisasi port serial
-s=serial.Serial('com1', 2400)
+s=serial.Serial('com6', 2400)
 
 def readlineCR(port):   # Fungsi khusus buat baca feed data serial (string) dari vCOM 
     rv = ""             # dengan terminator carriage return (CR) / '\r' atau ''
