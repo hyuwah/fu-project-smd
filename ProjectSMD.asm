@@ -116,15 +116,10 @@ Loop:
    mov a,count
    cjne a, countbefore, update
    ;Polling Button
-   ;lcall delay
    jnb P1.0, up
-   ;lcall delay
    jnb P1.1, down
-   ;lcall delay
    jnb P1.2, ok
-   ;lcall delay
    jnb P1.3, hapus
-   ;lcall delay
    ;Polling relay
    cjne a, memory, not_equal
    equal:
@@ -132,10 +127,10 @@ Loop:
    not_equal:
    jc kurang_dari
    lebih_dari:  ;A > 27
-   clr p3.4    ; Your Code Here
+   clr p3.4
     JMP Loop
    kurang_dari: ;A < 27
-   setb p3.4     ; Your Code Here
+   setb p3.4
    jmp Loop
 
 update:
@@ -197,7 +192,6 @@ WAIT:
    MOV data_adc,adc_port ;// moves the digital data to accumulator
 ret
 
-
 ;LCD INITIALIZATION
 init:   MOV P2, #38H
     ACALL LCDCONTROL
@@ -208,6 +202,24 @@ blink:    MOV P2, #0EH
 clear:    MOV P2, #01H
     ACALL LCDCONTROL
     ret
+
+;COMMAND SUB-ROUTINE FOR LCD CONTROL
+LCDCONTROL:
+  CLR RW
+  CLR RS
+  SETB E
+  ACALL DELAY
+  CLR E
+  RET
+
+;SUBROUTINE FOR DATA LACTCHING TO LCD
+LCDDATA:
+  CLR RW
+  SETB RS
+  SETB E
+  ACALL DELAY
+  CLR E
+  RET
 
 ;PRINTING A CHARACTER
 print:
@@ -280,28 +292,6 @@ tunggu:
   DJNZ R0, tunggu
   DJNZ R1, tunggu
 RET
-
-;COMMAND SUB-ROUTINE FOR LCD CONTROL
-LCDCONTROL:
-  CLR RW
-  CLR RS
-
-  SETB E
-  ACALL DELAY
-  CLR E
-
-  RET
-
-;SUBROUTINE FOR DATA LACTCHING TO LCD
-LCDDATA:
-  CLR RW
-  SETB RS
-
-  SETB E
-  ACALL DELAY
-  CLR E
-
-  RET
 
 
 ;Konversi Hex ke Ascii untuk LCD
